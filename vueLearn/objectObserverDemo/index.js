@@ -3,18 +3,6 @@ import { def, isObject } from "./util";
 
 
 function observe(val) {
-    // if (!isObject(val)) {
-    //     return;
-    // }
-
-    // //如果某个对象已经被侦测，直接返回对象上的Observer
-    // if (hasOwn(val, '__ob__') && value.__ob__ instanceof Observer) {
-    //     ob = value.__ob__
-    // } else {
-    //     ob = new Observer(value)
-    // }
-
-    // return ob
     new Observer(value)
 }
 
@@ -32,7 +20,7 @@ function defineReactive(obj, key, val) {
     const getter = property && property.get
     const setter = property && property.set
 
-    let childOb = observe(val)//递归子属性
+    observe(val)//递归子属性
     Object.defineProperty(obj, key, {
         enumerable: true,
         configurable: true,
