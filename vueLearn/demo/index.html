@@ -1,0 +1,17 @@
+<div id="app">
+    <div>姓名：{{others[0].name}}</div>
+</div>
+
+<script src="./vue.js"></script>
+
+<script>
+    let vm = new Vue({
+        el: '#app',
+        data: {
+            name: '安子',
+            others:[]
+        }
+    })
+    // vm.$set(vm.$data,'age',23)
+    vm.$set(vm.$data.others,0,{name:111})
+</script>

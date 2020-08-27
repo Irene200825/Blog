@@ -1,4 +1,4 @@
-import Dep from "./ dep"
+import Dep from "./dep"
 import { isObject, hasOwn } from "./util"
 import { arrayMethods } from "./array"
 
@@ -56,7 +56,7 @@ export class Observer {
 }
 
 
-function defineReactive(obj, key, val) {
+export function defineReactive(obj, key, val) {
     const dep = new Dep()
 
     const property = Object.getOwnPropertyDescriptor()
