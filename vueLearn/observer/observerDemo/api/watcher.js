@@ -103,6 +103,7 @@ function traverse(val) {
     _traverse(val, seenObjects)
 }
 
+//递归取值
 function _traverse(val, seen) {
     let i, keys
     const isA = Array.isArray(val)
@@ -122,6 +123,6 @@ function _traverse(val, seen) {
     } else {
         keys = Object.keys(val)
         i = keys.length
-        while (i--) _traverse(val[keys[i]], seen)
+        while (i--) _traverse(val[keys[i]], seen)//取值的时候就已经触发getter
     }
 }
