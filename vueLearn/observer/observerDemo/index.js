@@ -1,18 +1,19 @@
-import Dep from "./dep"
-import { isObject, hasOwn } from "./util"
-import { arrayMethods } from "./array"
+import Dep from "./dep.js"
+import { isObject, hasOwn ,def} from "./util.js"
+import { arrayMethods } from "./array.js"
+import Watcher from "../observerDemo/watcher.js"
 
 
 function observe(val) {
     //不是对象或者是null
-    if (!isObject(value)) {
+    if (!isObject(val)) {
         return
     }
 
     let ob
     //如果value是响应式的，保证不重复侦测
-    if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observe) {
-        ob = value.__ob__
+    if (hasOwn(val, '__ob__') && val.__ob__ instanceof Observe) {
+        ob = val.__ob__
     } else {
         ob = new Observer(val)
     }
@@ -59,7 +60,7 @@ export class Observer {
 export function defineReactive(obj, key, val) {
     const dep = new Dep()
 
-    const property = Object.getOwnPropertyDescriptor()
+    const property = Object.getOwnPropertyDescriptor(obj, key)
     if (property && property.configurable === false) {
         return
     }
@@ -75,8 +76,10 @@ export function defineReactive(obj, key, val) {
             const value = getter ? getter.call(obj) : val
             if (Dep.target) {
                 dep.depend()
+                console.log("收集dep", key , dep)
                 if (childOb) {
                     childOb.dep.depend()//这边收集针对数组，如果它的值是对象(包括数组)，把依赖收集到对象的dep上
+                    console.log("收集childOb.dep", key , childOb.dep)
                     if (Array.isArray(value)) {
                         dependArray(value)
                     }
@@ -98,6 +101,7 @@ export function defineReactive(obj, key, val) {
             }
 
             childOb = observe(newVal)//新增的时候，如果值有多层的情况，进行递归
+            console.log("触发dep",dep.id)
             dep.notify()
         }
     })
@@ -117,3 +121,30 @@ function dependArray(value) {
         }
     }
 }
+
+let data = {
+    person: {
+        name: {
+            firstName: 'Irene',
+            lastName: 'Zhang'
+        },
+        age: 23,
+        hobbies:[{sports:['walk','cycling']}]
+    }
+}
+
+
+
+console.log('------new Observer------')
+let observer = new Observer(data)
+console.log("侦测对象data:", observer)
+
+console.log('------new Watcher person.name------')
+new Watcher(data, 'person.hobbies', function (val, newVal) {
+    console.log("Watcher回调")
+})
+
+
+
+console.log('------修改person.name------')
+data.person.hobbies.push('1')

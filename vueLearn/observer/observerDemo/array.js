@@ -1,9 +1,9 @@
-import { def } from "../objectObserverDemo/util";
+import { def } from "../objectObserverDemo/util.js";
 
 const arrayProto = Array.prototype
 export const arrayMethods = Object.create(arrayProto)
 
-['push',
+;['push',
 'pop',
 'shift',
 'unshift',
@@ -27,6 +27,7 @@ export const arrayMethods = Object.create(arrayProto)
                     break
             }
             if (inserted) ob.observeArray(inserted)//新增的时候，Observe a list of Array items.
+            console.log("触发dep", ob.dep.id)
             ob.dep.notify()//触发依赖
             return result
         })

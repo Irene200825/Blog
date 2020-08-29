@@ -28,6 +28,7 @@ export default class Dep {
     const subs = this.subs.slice()
     for (let i = 0, l = subs.length; i < l; i++) {
       subs[i].update()
+      console.log("触发的Watcher",subs[i])
     }
   }
 }
