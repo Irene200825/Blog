@@ -26,7 +26,7 @@ export const arrayMethods = Object.create(arrayProto)
                     inserted = args.slice(2)//第三个参数开始是增加的内容
                     break
             }
-            // if (inserted) ob.
+            if (inserted) ob.observeArray(inserted)//新增的时候，Observe a list of Array items.
             ob.dep.notify()//触发依赖
             return result
         })

@@ -1,4 +1,5 @@
 import { pushTarget, popTarget } from "./ dep"
+import { isObject } from "./util"
 
 /**
  * Parse simple path.
@@ -18,14 +19,28 @@ export function parsePath(path) {
     }
 }
 
+
 export default class Watcher {
-    constructor(vm, expOrFn, cb) {
+    constructor(vm, expOrFn, cb, options) {
 
         this.deps = []
         this.depIds = new Set()
 
         this.vm = vm
-        this.getter = parsePath(expOrFn)
+
+        // options
+        if (options) {
+            this.deep = !!options.deep
+        } else {
+            this.deep = false
+        }
+
+
+        if (typeof expOrFn === 'function') {
+            this.getter = expOrFn
+        } else {
+            this.getter = parsePath(expOrFn)
+        }
         this.cb = cb
         this.value = this.get()
     }
@@ -40,6 +55,9 @@ export default class Watcher {
         } catch (e) {
             throw e
         } finally {
+            if (this.deep) {
+                traverse(value)
+            }
             popTarget()//清除Dep.target的值
         }
         return value
@@ -57,9 +75,53 @@ export default class Watcher {
     }
 
 
-    update(){
+    update() {
         const oldValue = this.value//原来的值
         this.value = this.get()//新的值
-        this.cb.call(this.vm,this.value,oldValue)
+        this.cb.call(this.vm, this.value, oldValue)
+    }
+
+
+    teardown() {
+        let i = this.deps.length
+        while (i--) {
+            this.deps[i].removeSub(this)
+        }
+    }
+}
+
+
+
+/**
+ * Recursively traverse an object to evoke all converted
+ * getters, so that every nested property inside the object
+ * is collected as a "deep" dependency.
+ */
+const seenObjects = new Set()
+function traverse(val) {
+    seenObjects.clear()
+    _traverse(val, seenObjects)
+}
+
+function _traverse(val, seen) {
+    let i, keys
+    const isA = Array.isArray(val)
+    if ((!isA && !isObject(val)) || !Object.isExtensible(val)) {
+        return
+    }
+    if (val.__ob__) {
+        const depId = val.__ob__.dep.id
+        if (seen.has(depId)) {
+            return
+        }
+        seen.add(depId)
+    }
+    if (isA) {
+        i = val.length
+        while (i--) _traverse(val[i], seen)
+    } else {
+        keys = Object.keys(val)
+        i = keys.length
+        while (i--) _traverse(val[keys[i]], seen)
     }
 }

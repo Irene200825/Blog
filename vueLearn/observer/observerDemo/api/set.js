@@ -1,5 +1,5 @@
 import { defineReactive } from ".."
-import { isValidArrayIndex } from "../util"
+import { isValidArrayIndex, hasOwn } from "../util"
 
 /**
  * Set a property on an object. Adds the new property and

@@ -5,29 +5,42 @@ let uid = 0
  * directives subscribing to it.
  */
 export default class Dep {
-  constructor () {
+  constructor() {
     this.id = uid++
     this.subs = []
   }
 
-  addSub (sub) {
+  addSub(sub) {
     this.subs.push(sub)
   }
 
-  removeSub (sub) {
+  removeSub(sub) {
     remove(this.subs, sub)
   }
 
-  depend () {
+  depend() {
     if (Dep.target) {
       Dep.target.addDep(this)
     }
   }
 
-  notify () {
+  notify() {
     const subs = this.subs.slice()
     for (let i = 0, l = subs.length; i < l; i++) {
       subs[i].update()
+    }
+  }
+}
+
+
+/**
+ * Remove an item from an array
+ */
+function remove(arr, item) {
+  if (arr.length) {
+    var index = arr.indexOf(item);
+    if (index > -1) {
+      return arr.splice(index, 1)
     }
   }
 }
@@ -39,11 +52,11 @@ export default class Dep {
 Dep.target = null// Dep静态成员 target,最新的一个Watcher
 
 
-export function pushTarget (_target) {
+export function pushTarget(_target) {
   Dep.target = _target
 }
 
-export function popTarget () {
-    Dep.target = null
+export function popTarget() {
+  Dep.target = null
 }
 

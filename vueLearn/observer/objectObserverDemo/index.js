@@ -1,4 +1,4 @@
-import Dep from "./ dep"
+import Dep from "./dep"
 import { isObject, hasOwn } from "./util"
 
 
