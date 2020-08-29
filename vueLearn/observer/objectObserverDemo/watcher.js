@@ -1,4 +1,4 @@
-import { pushTarget, popTarget } from "./ dep"
+import { pushTarget, popTarget } from "./dep.js"
 
 /**
  * Parse simple path.
@@ -51,7 +51,7 @@ export default class Watcher {
         //如果没有订阅，才能存储
         if (!this.depIds.has(id)) {
             this.depIds.add(id)
-            this.depIds.push(dep)
+            this.deps.push(dep)
             dep.addSub(this)
         }
     }

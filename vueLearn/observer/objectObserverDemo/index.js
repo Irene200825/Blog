@@ -1,16 +1,17 @@
-import Dep from "./dep"
-import { isObject, hasOwn } from "./util"
+import Dep from "./dep.js"
+import { isObject, hasOwn, def } from "./util.js"
+import Watcher from "./watcher.js"
 
 
 function observe(val) {
-    if (!isObject(value)) {
+    if (!isObject(val)) {
         return
     }
 
     let ob
     //如果value是响应式的，保证不重复侦测
-    if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observe) {
-        ob = value.__ob__
+    if (hasOwn(val, '__ob__') && val.__ob__ instanceof Observe) {
+        ob = val.__ob__
     } else {
         ob = new Observer(val)
     }
@@ -19,7 +20,7 @@ function observe(val) {
 }
 
 
-export class Observer {
+class Observer {
     constructor(value) {
         this.value = value
         def(value, '__ob__', this)
@@ -38,7 +39,7 @@ export class Observer {
 function defineReactive(obj, key, val) {
     const dep = new Dep()
 
-    const property = Object.getOwnPropertyDescriptor()
+    const property = Object.getOwnPropertyDescriptor(obj, key)
     if (property && property.configurable === false) {
         return
     }
@@ -54,6 +55,7 @@ function defineReactive(obj, key, val) {
             const value = getter ? getter.call(obj) : val
             if (Dep.target) {
                 dep.depend()
+                console.log("收集dep", key ,dep)
             }
             return value
         },
@@ -72,12 +74,47 @@ function defineReactive(obj, key, val) {
 
             childOb = observe(newVal)//新增的时候，如果值有多层的情况，进行递归
             dep.notify()
+            console.log("触发的dep",dep)
         }
     })
 
 }
 
 
+let data = {
+    person: {
+        name: {
+            firstName: 'Irene',
+            lastName: 'Zhang'
+        },
+        age: 23
+    }
+}
 
 
+console.log('------new Observer------')
+let observer = new Observer(data)
+console.log("侦测对象data:", observer)
+
+console.log('------new Watcher------')
+new Watcher(data, 'person.name', function (val, newVal) {
+    console.log("触发3", val, newVal)
+})
+
+
+console.log('------修改person.name------')
+data.person.name = {
+    firstName: 'hongan',
+    lastName: 'Zhang'
+}
+
+
+console.log('------修改person------')
+data.person = {
+    name: {
+        firstName: 'hongan',
+        lastName: 'Zhang'
+    },
+    age: 23
+}
 
