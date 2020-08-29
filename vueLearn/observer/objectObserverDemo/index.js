@@ -54,8 +54,9 @@ function defineReactive(obj, key, val) {
         get: function () {
             const value = getter ? getter.call(obj) : val
             if (Dep.target) {
-                dep.depend()
-                console.log("收集dep", key ,dep)
+                dep.depend()    
+                console.log("收集dep", key , dep)
+
             }
             return value
         },
@@ -73,8 +74,8 @@ function defineReactive(obj, key, val) {
             }
 
             childOb = observe(newVal)//新增的时候，如果值有多层的情况，进行递归
+            console.log("触发的dep",dep.id)
             dep.notify()
-            console.log("触发的dep",dep)
         }
     })
 
@@ -96,9 +97,9 @@ console.log('------new Observer------')
 let observer = new Observer(data)
 console.log("侦测对象data:", observer)
 
-console.log('------new Watcher------')
+console.log('------new Watcher person.name------')
 new Watcher(data, 'person.name', function (val, newVal) {
-    console.log("触发3", val, newVal)
+    console.log("Watcher回调")
 })
 
 
@@ -109,12 +110,12 @@ data.person.name = {
 }
 
 
-console.log('------修改person------')
-data.person = {
-    name: {
-        firstName: 'hongan',
-        lastName: 'Zhang'
-    },
-    age: 23
-}
+// console.log('------修改person------')
+// data.person = {
+//     name: {
+//         firstName: 'hongan',
+//         lastName: 'Zhang'
+//     },
+//     age: 23
+// }
 
